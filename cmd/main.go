@@ -1,25 +1,18 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"oauth2/internal/transport"
-	"time"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc("/authorization", transport.DeviceAuthorizationHandler)
-	router.HandleFunc("/access_token", transport.DeviceAccessTokenHandler)
 
-	// create and host web server
-	svr := &http.Server{
-		Handler:      router,
-		Addr:         "127.0.0.1:8081",
-		WriteTimeout: 10 * time.Second,
-		ReadTimeout:  10 * time.Second,
-	}
+	router.HandleFunc("/device_authorization", transport.DeviceAuthorizationHandler).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/access_token", transport.DeviceAccessTokenHandler).Methods(http.MethodPost, http.MethodOptions)
 
-	log.Fatal(svr.ListenAndServe())
+	log.Fatal(http.ListenAndServe(":8081", router))
 }
