@@ -88,6 +88,7 @@ func (g *Granter) generateDeviceCode() string {
 
 func (g *Granter) generateUserCode() string {
 	// this code has to be simple enough for a human to interact with
+	// randomize seed for user code generation
 	rand.Seed(time.Now().UnixNano())
 	runes := []rune(RUNES)
 
