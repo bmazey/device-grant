@@ -2,6 +2,7 @@ package oauth
 
 import (
 	"crypto/rsa"
+
 	"gopkg.in/square/go-jose.v2"
 )
 

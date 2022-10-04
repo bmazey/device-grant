@@ -2,9 +2,10 @@ package oauth
 
 import (
 	"crypto/rsa"
-	"gopkg.in/square/go-jose.v2"
 	"log"
 	"net/http"
+
+	"gopkg.in/square/go-jose.v2"
 )
 
 const RS256 = "RS256"

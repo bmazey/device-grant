@@ -2,18 +2,20 @@ package oauth
 
 import (
 	"crypto/rsa"
+	"log"
+
 	"github.com/google/uuid"
 	"gopkg.in/square/go-jose.v2"
 	"gopkg.in/square/go-jose.v2/jwt"
-	"log"
 )
 
 type SimpleIssuer struct {
+	Name   string
 	Signer jose.Signer
 	Key    jose.JSONWebKey
 }
 
-func NewSimpleIssuer(private *rsa.PrivateKey) SimpleIssuer {
+func NewSimpleIssuer(private *rsa.PrivateKey, name string) SimpleIssuer {
 	// generate a uuid to serve as the kid
 	kid := uuid.New().String()
 
@@ -24,21 +26,20 @@ func NewSimpleIssuer(private *rsa.PrivateKey) SimpleIssuer {
 	}
 
 	return SimpleIssuer{
+		Name:   name,
 		Signer: signer,
 		Key:    NewJSONWebKey(private.PublicKey, kid),
 	}
 }
 
-func (s *SimpleIssuer) IssueJWT(issuer string, subject string, audience []string) (string, error) {
+func (s *SimpleIssuer) IssueJWT(subject string, audience []string) (string, error) {
 	builder := jwt.Signed(s.Signer)
 
 	claims := jwt.Claims{
-		Issuer:   issuer,
+		Issuer:   s.Name,
 		Subject:  subject,
 		Audience: audience,
 	}
 
-	builder.Claims(claims)
-
-	return builder.CompactSerialize()
+	return builder.Claims(claims).CompactSerialize()
 }
