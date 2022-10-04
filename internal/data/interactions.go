@@ -1,26 +1,16 @@
 package data
 
 import (
+	"errors"
 	"sync"
 	"time"
 )
 
 type Interaction struct {
-	ClientID string
-	DeviceID string
-	UserCode string
-	Expires  time.Time
-}
-
-func (i *Interaction) Create(clientID string, deviceID string, userCode string, ttl time.Duration) Interaction {
-	expires := time.Unix(time.Now().Unix()+int64(ttl.Seconds()), 0)
-
-	return Interaction{
-		ClientID: clientID,
-		DeviceID: deviceID,
-		UserCode: userCode,
-		Expires:  expires,
-	}
+	ClientID   string
+	DeviceCode string
+	UserCode   string
+	Expires    time.Time
 }
 
 func (i *Interaction) IsExpired() bool {
@@ -33,6 +23,12 @@ func (i *Interaction) IsExpired() bool {
 type InteractionStore struct {
 	Interactions []Interaction
 	mu           sync.RWMutex
+}
+
+func NewInteractionStore() InteractionStore {
+	return InteractionStore{
+		Interactions: make([]Interaction, 0),
+	}
 }
 
 func (s *InteractionStore) Add(i Interaction) {
@@ -55,15 +51,15 @@ func (s *InteractionStore) Delete(i Interaction) {
 }
 
 // Retrieve attempts to return an unexpired interaction given a user_code
-func (s *InteractionStore) Retrieve(userCode string) *Interaction {
+func (s *InteractionStore) Retrieve(userCode string) (interface{}, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	for _, v := range s.Interactions {
 		if v.UserCode == userCode && !v.IsExpired() {
-			return &v
+			return v, nil
 		}
 	}
 
-	return nil
+	return nil, errors.New("no such interaction")
 }

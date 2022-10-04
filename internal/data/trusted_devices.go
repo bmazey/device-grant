@@ -5,7 +5,7 @@ import (
 )
 
 type TrustedDevice struct {
-	ID    string
+	Code  string
 	Owner string
 }
 
@@ -14,7 +14,7 @@ type TrustedDeviceStore struct {
 	mu      sync.RWMutex
 }
 
-func NewDeviceStore() TrustedDeviceStore {
+func NewTrustedDeviceStore() TrustedDeviceStore {
 	return TrustedDeviceStore{
 		Devices: make([]TrustedDevice, 0),
 	}
@@ -33,7 +33,7 @@ func (s *TrustedDeviceStore) Contains(deviceID string, clientID string) bool {
 	defer s.mu.RUnlock()
 
 	for _, device := range s.Devices {
-		if device.ID == deviceID && device.Owner == clientID {
+		if device.Code == deviceID && device.Owner == clientID {
 			return true
 		}
 	}
