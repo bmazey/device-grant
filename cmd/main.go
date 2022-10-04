@@ -32,8 +32,9 @@ func main() {
 	router.HandleFunc("/jwks", issuer.JWKSHandler)
 
 	// routes specific to RFC 8628 OAuth 2.0 Device Authorization Grant https://www.rfc-editor.org/rfc/rfc8628
-	router.HandleFunc("/device_authorization", granter.AuthorizationHandler).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/device", granter.RegistrationHandler).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/access_token", granter.AccessTokenHandler).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/device_authorization", granter.AuthorizationHandler).Methods(http.MethodPost, http.MethodOptions)
 
 	// start the server
 	log.Fatal(http.ListenAndServe(":8081", router))

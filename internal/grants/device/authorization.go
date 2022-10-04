@@ -21,3 +21,7 @@ func (g *Granter) AuthorizationHandler(w http.ResponseWriter, r *http.Request) {
 	// set JSON Content-Type header
 	w.Header().Set("Content-Type", "application/json")
 }
+
+func (g *Granter) RegistrationHandler(w http.ResponseWriter, r *http.Request) {
+	// TODO - implement
+}
