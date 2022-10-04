@@ -10,14 +10,14 @@ import (
 )
 
 type SimpleIssuer struct {
+	Name      string
 	Signer    jose.Signer
 	Keys      jose.JSONWebKeySet
 	NotBefore time.Time
-	Name      string
-	TTL       int64
+	TokenTTL  time.Duration
 }
 
-func NewSimpleIssuer(private *rsa.PrivateKey, name string, start time.Time, ttl int64) SimpleIssuer {
+func NewSimpleIssuer(private *rsa.PrivateKey, name string, start time.Time, ttl time.Duration) SimpleIssuer {
 	// generate a uuid to serve as the kid
 	kid := uuid.New().String()
 
@@ -32,15 +32,15 @@ func NewSimpleIssuer(private *rsa.PrivateKey, name string, start time.Time, ttl 
 		Keys:      NewJSONWebKeySet(private.PublicKey, kid),
 		NotBefore: start,
 		Name:      name,
-		TTL:       ttl,
+		TokenTTL:  ttl,
 	}
 }
 
-func (s *SimpleIssuer) IssueJWT(subject string, audience []string) (string, error) {
+func (s *SimpleIssuer) IssueJWT(subject string, audience []string) (*AccessToken, error) {
 	builder := jwt.Signed(s.Signer)
 
 	now := time.Now()
-	later := time.Unix(now.Unix()+s.TTL, 0)
+	later := time.Unix(now.Unix()+int64(s.TokenTTL.Seconds()), 0)
 
 	claims := jwt.Claims{
 		Issuer:    s.Name,
@@ -52,5 +52,14 @@ func (s *SimpleIssuer) IssueJWT(subject string, audience []string) (string, erro
 		ID:        uuid.New().String(),
 	}
 
-	return builder.Claims(claims).CompactSerialize()
+	accessJWT, err := builder.Claims(claims).CompactSerialize()
+	if err != nil {
+		return nil, err
+	}
+
+	return &AccessToken{
+		JWT:       accessJWT,
+		TokenType: BEARER,
+		Expiry:    int64(s.TokenTTL.Seconds()),
+	}, nil
 }

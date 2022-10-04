@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
-	"golang.org/x/oauth2"
 )
 
 // AccessTokenRequest as defined in https://www.rfc-editor.org/rfc/rfc8628#section-3.4
@@ -26,16 +24,12 @@ func (g *Granter) AccessTokenHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	jwt, err := g.Issuer.IssueJWT("test-subject", []string{"my-audience"})
+	accessToken, err := g.Issuer.IssueJWT("test-subject", []string{"my-audience"})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	token := oauth2.Token{
-		AccessToken: jwt,
-	}
-
-	content, err := json.Marshal(token)
+	content, err := json.Marshal(accessToken)
 	if err != nil {
 		log.Fatal(err)
 	}
