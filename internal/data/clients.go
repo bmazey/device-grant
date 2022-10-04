@@ -20,7 +20,7 @@ func NewClientStore() ClientStore {
 	}
 }
 
-func (c *ClientStore) CreateClient() string {
+func (c *ClientStore) Create() string {
 	name := c.Generator.Generate()
 
 	c.mu.Lock()
@@ -31,7 +31,7 @@ func (c *ClientStore) CreateClient() string {
 	return name
 }
 
-func (c *ClientStore) DeleteClient(id string) {
+func (c *ClientStore) Delete(id string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
