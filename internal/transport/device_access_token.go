@@ -12,7 +12,7 @@ type DeviceAccessTokenRequest struct {
 	ClientID   string `json:"client_id,omitempty"`
 }
 
-// DeviceAccessTokenHandler endpoint as defined in https://www.rfc-editor.org/rfc/rfc8628#section-3.4
+// DeviceAccessTokenHandler as defined in https://www.rfc-editor.org/rfc/rfc8628#section-3.4
 func DeviceAccessTokenHandler(w http.ResponseWriter, r *http.Request) {
 	var request DeviceAccessTokenRequest
 

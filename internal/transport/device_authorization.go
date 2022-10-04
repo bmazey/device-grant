@@ -10,7 +10,7 @@ type DeviceAuthorizationResponse struct {
 	ExpiresIn       int    `json:"expires_in,omitempty"`
 }
 
-// DeviceAuthorizationHandler endpoint as defined in https://www.rfc-editor.org/rfc/rfc8628#section-3.1
+// DeviceAuthorizationHandler as defined in https://www.rfc-editor.org/rfc/rfc8628#section-3.1
 func DeviceAuthorizationHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
 		w.WriteHeader(http.StatusUnsupportedMediaType)
