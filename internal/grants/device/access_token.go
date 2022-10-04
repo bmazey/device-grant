@@ -17,12 +17,12 @@ type AccessTokenRequest struct {
 
 // AccessTokenHandler as defined in https://www.rfc-editor.org/rfc/rfc8628#section-3.4
 func (g *Granter) AccessTokenHandler(w http.ResponseWriter, r *http.Request) {
-	var request AccessTokenRequest
-
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-	}
+	//var request AccessTokenRequest
+	//
+	//err := json.NewDecoder(r.Body).Decode(&request)
+	//if err != nil {
+	//	w.WriteHeader(http.StatusBadRequest)
+	//}
 
 	w.Header().Set("Content-Type", "application/json")
 

@@ -7,6 +7,7 @@ import (
 	"device-grant/pkg/oauth"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -20,7 +21,10 @@ func main() {
 
 	// create a simple oauth2 issuer which contains a JWT signer and matching JWKS
 	// the name provided below becomes the 'iss' claim in minted access tokens
-	issuer := oauth.NewSimpleIssuer(private, "127.0.0.1:8081/jwks")
+	// the start time determines the 'nbf' claim
+	// the TTL integer determines the lifetime of an access token in seconds
+	hour := int64(60 * 60)
+	issuer := oauth.NewSimpleIssuer(private, "127.0.0.1:8081/jwks", time.Now(), hour)
 
 	// create a device granter
 	granter := device.NewGranter(issuer)

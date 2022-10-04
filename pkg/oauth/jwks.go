@@ -2,24 +2,33 @@ package oauth
 
 import (
 	"crypto/rsa"
+	"encoding/json"
 	"log"
 	"net/http"
 
 	"gopkg.in/square/go-jose.v2"
 )
 
-const RS256 = "RS256"
+const (
+	RS256 = "RS256"
+	SIG   = "sig"
+)
 
-func NewJSONWebKey(public rsa.PublicKey, kid string) jose.JSONWebKey {
-	return jose.JSONWebKey{
-		Key:       public,
+func NewJSONWebKeySet(public rsa.PublicKey, kid string) jose.JSONWebKeySet {
+	key := jose.JSONWebKey{
+		Key:       &public,
 		KeyID:     kid,
 		Algorithm: RS256,
+		Use:       SIG,
+	}
+
+	return jose.JSONWebKeySet{
+		Keys: []jose.JSONWebKey{key},
 	}
 }
 
 func (s *SimpleIssuer) JWKSHandler(w http.ResponseWriter, r *http.Request) {
-	response, err := s.Key.MarshalJSON()
+	response, err := json.Marshal(s.Keys)
 	if err != nil {
 		log.Fatal(err)
 	}
