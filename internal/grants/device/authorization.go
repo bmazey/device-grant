@@ -6,10 +6,11 @@ import (
 
 // AuthorizationResponse as defined in https://www.rfc-editor.org/rfc/rfc8628#section-3.2
 type AuthorizationResponse struct {
-	DeviceCode      string `json:"device_code,omitempty"`
-	UserCode        string `json:"user_code,omitempty"`
-	VerificationURI string `json:"verification_uri,omitempty"`
-	ExpiresIn       int    `json:"expires_in,omitempty"`
+	DeviceCode      string `json:"device_code"`
+	UserCode        string `json:"user_code"`
+	VerificationURI string `json:"verification_uri"`
+	ExpiresIn       int    `json:"expires_in"`
+	Interval        int    `json:"interval"`
 }
 
 // AuthorizationHandler as defined in https://www.rfc-editor.org/rfc/rfc8628#section-3.1

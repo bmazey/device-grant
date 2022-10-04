@@ -27,7 +27,8 @@ func main() {
 	issuer := oauth.NewSimpleIssuer(private, "http://127.0.0.1:8081/jwks", time.Now(), hour)
 
 	// create a device granter
-	granter := device.NewGranter(issuer)
+	minutes, _ := time.ParseDuration("10m")
+	granter := device.NewGranter(issuer, minutes, 8)
 
 	// create gorilla mux router
 	router := mux.NewRouter()
