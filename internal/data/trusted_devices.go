@@ -24,7 +24,13 @@ func (s *TrustedDeviceStore) AddDevice(d TrustedDevice) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	// FIXME - check if device already exists, and skip to avoid duplicates
+	// check if device already exists, and if so skip adding to avoid duplicates
+	for _, device := range s.Devices {
+		if device.Code == d.Code && device.Owner == d.Owner {
+			return
+		}
+	}
+
 	s.Devices = append(s.Devices, d)
 }
 
