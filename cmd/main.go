@@ -28,8 +28,11 @@ func main() {
 
 	// create a device granter
 	minutes, _ := time.ParseDuration("10m")
-	granter := device.NewGranter(issuer, minutes, 8)
-	// TODO - add default client to granter and print it
+	granter := device.NewGranter(issuer, minutes, 8, "http://127.0.0.1:8081/device")
+
+	// add a default public client_id for testing, and log it to console
+	client := granter.ClientStore.Create()
+	log.Printf("created default public client_id: %v", client)
 
 	// create gorilla mux router
 	router := mux.NewRouter()

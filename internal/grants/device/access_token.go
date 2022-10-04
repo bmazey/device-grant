@@ -6,25 +6,38 @@ import (
 	"net/http"
 )
 
-// AccessTokenRequest as defined in https://www.rfc-editor.org/rfc/rfc8628#section-3.4
-type AccessTokenRequest struct {
-	GrantType  string `json:"grant_type"`
-	DeviceCode string `json:"device_code"`
-	ClientID   string `json:"client_id"`
-}
-
 // AccessTokenHandler as defined in https://www.rfc-editor.org/rfc/rfc8628#section-3.4
 func (g *Granter) AccessTokenHandler(w http.ResponseWriter, r *http.Request) {
-	var request AccessTokenRequest
-
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+	if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
+		w.WriteHeader(http.StatusUnsupportedMediaType)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	// read form param values
+	grant := r.FormValue("grant_type")
+	client := r.FormValue("client_id")
+	device := r.FormValue("device_code")
 
-	accessToken, err := g.Issuer.IssueJWT("test-subject", []string{"my-audience"})
+	if grant == "" || client == "" || device == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// as per spec, deny request if grant_type is incorrect
+	if grant != TYPE {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	// check to see if a trusted device exists
+	if !g.IsTrustedDevice(device, client) {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	// device is trusted, generate access JWT
+	// we're using a compound subject and sample resource server audience name
+	accessToken, err := g.Issuer.IssueJWT(client+"#"+device, []string{"important-resource-server"})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,5 +47,6 @@ func (g *Granter) AccessTokenHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(content)
 }

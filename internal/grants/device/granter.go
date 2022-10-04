@@ -8,7 +8,10 @@ import (
 	"time"
 )
 
-const RUNES = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const (
+	RUNES = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	TYPE  = "urn:ietf:params:oauth:grant-type:device_code"
+)
 
 type Granter struct {
 	Issuer             oauth.SimpleIssuer
@@ -16,21 +19,25 @@ type Granter struct {
 	InteractionStore   data.InteractionStore
 	TrustedDeviceStore data.TrustedDeviceStore
 	CodeTTL            time.Duration
+	VerificationURI    string
+	Type               string
 	UserCodeLength     int
 }
 
-func NewGranter(issuer oauth.SimpleIssuer, ttl time.Duration, length int) Granter {
+func NewGranter(issuer oauth.SimpleIssuer, ttl time.Duration, length int, uri string) Granter {
 	return Granter{
 		Issuer:             issuer,
 		ClientStore:        data.NewClientStore(),
 		InteractionStore:   data.NewInteractionStore(),
 		TrustedDeviceStore: data.NewTrustedDeviceStore(),
 		CodeTTL:            ttl,
+		VerificationURI:    uri,
 		UserCodeLength:     length,
+		Type:               TYPE,
 	}
 }
 
-func (g *Granter) CreateInteraction(clientID string) {
+func (g *Granter) CreateInteraction(clientID string) data.Interaction {
 	expires := time.Unix(time.Now().Unix()+int64(g.CodeTTL.Seconds()), 0)
 
 	i := data.Interaction{
@@ -41,9 +48,11 @@ func (g *Granter) CreateInteraction(clientID string) {
 	}
 
 	g.InteractionStore.Add(i)
+
+	return i
 }
 
-// AuthorizeDevice checks for an unexpired interaction by userCode and if one exists, trusts device
+// AuthorizeDevice checks for an unexpired interaction by userCode and if exists, trusts device & deletes interaction
 func (g *Granter) AuthorizeDevice(userCode string) error {
 	// start by looking for a pre-existing interaction
 	i, err := g.InteractionStore.Retrieve(userCode)
@@ -51,7 +60,7 @@ func (g *Granter) AuthorizeDevice(userCode string) error {
 		return err
 	}
 
-	// interaction exists, clean it up after
+	// interaction exists, clean it up
 	interaction := i.(data.Interaction)
 	defer g.InteractionStore.Delete(interaction)
 
@@ -67,6 +76,11 @@ func (g *Granter) AuthorizeDevice(userCode string) error {
 	return nil
 }
 
+// IsTrustedDevice returns true iff there exists at least one trusted device with matching client_id and device_code
+func (g *Granter) IsTrustedDevice(device string, client string) bool {
+	return g.TrustedDeviceStore.Contains(device, client)
+}
+
 func (g *Granter) generateDeviceCode() string {
 	// we're just going to do a UUID here for the sake of simplicity
 	return uuid.New().String()
@@ -74,6 +88,7 @@ func (g *Granter) generateDeviceCode() string {
 
 func (g *Granter) generateUserCode() string {
 	// this code has to be simple enough for a human to interact with
+	rand.Seed(time.Now().UnixNano())
 	runes := []rune(RUNES)
 
 	code := make([]rune, g.UserCodeLength)

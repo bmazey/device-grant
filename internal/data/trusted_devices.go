@@ -24,6 +24,7 @@ func (s *TrustedDeviceStore) AddDevice(d TrustedDevice) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	// FIXME - check if device already exists, and skip to avoid duplicates
 	s.Devices = append(s.Devices, d)
 }
 
