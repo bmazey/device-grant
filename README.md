@@ -1,19 +1,21 @@
 # device grant [RFC 8628](https://www.rfc-editor.org/rfc/rfc8628)
 
 A simple oauth2-enabled device grant server which implements RFC 8628.
-
 ```
 go build -o device_grant.exe cmd
 ```
 
 A sample client id is generated in the startup logs - see below for usage.
+```
+created default public client_id: lingering-sound
+```
 
 # endpoints
 
 Send device authorization requests using your generated client id.
 ```
 Content-Type application/x-www-form-urlencoded
-POST http://127.0.0.1:8081/device_authorization?client_id=falling-sunset
+POST http://127.0.0.1:8081/device_authorization?client_id=lingering-sound
 ```
 
 Sample response:
@@ -38,7 +40,7 @@ POST http://127.0.0.1:8081/device?user_code=FDUX1VQL
 Generate access JWTs for clients post user authorization.
 ```
 Content-Type application/x-www-form-urlencoded
-POST http://127.0.0.1:8081/access_token?grant_type=urn:ietf:params:oauth:grant-type:device_code&client_id=falling-sunset&device_code=9b60c30f-5272-4bda-8fc0-562c3c8cdf57
+POST http://127.0.0.1:8081/access_token?grant_type=urn:ietf:params:oauth:grant-type:device_code&client_id=lingering-sound&device_code=9b60c30f-5272-4bda-8fc0-562c3c8cdf57
 ```
 
 Sample response:
