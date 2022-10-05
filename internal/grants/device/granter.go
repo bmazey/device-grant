@@ -38,6 +38,7 @@ func NewGranter(issuer oauth.SimpleIssuer, ttl time.Duration, length int, uri st
 	}
 }
 
+// CreateInteraction records grant information provided to clients & users by client id
 func (g *Granter) CreateInteraction(clientID string) data.Interaction {
 	expires := time.Unix(time.Now().Unix()+int64(g.CodeTTL.Seconds()), 0)
 
@@ -53,7 +54,7 @@ func (g *Granter) CreateInteraction(clientID string) data.Interaction {
 	return i
 }
 
-// AuthorizeDevice checks for an unexpired interaction by userCode and if exists, trusts device & deletes interaction
+// AuthorizeDevice checks for an unexpired interaction by user code and if exists, trusts device & deletes interaction
 func (g *Granter) AuthorizeDevice(userCode string) error {
 	// start by looking for a pre-existing interaction
 	i, err := g.InteractionStore.Retrieve(userCode)

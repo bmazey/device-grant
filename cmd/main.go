@@ -14,7 +14,7 @@ func main() {
 	// create a new mux router
 	router, granter := transport.NewRouter(cfg)
 
-	// add a default public client_id for testing, and log it to console
+	// add a default public client_id for testing and log it to console
 	client := granter.ClientStore.Create()
 	log.Printf("created default public client_id: %v", client)
 

@@ -9,6 +9,7 @@ type TrustedDevice struct {
 	Owner string
 }
 
+// TrustedDeviceStore a sample in-memory store for trusted devices
 type TrustedDeviceStore struct {
 	Devices []TrustedDevice
 	mu      sync.RWMutex

@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Interaction stores information generated during grant flows
 type Interaction struct {
 	ClientID   string
 	DeviceCode string
