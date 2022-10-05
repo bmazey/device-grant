@@ -24,11 +24,13 @@ func NewRouter(cfg config.Config) (*mux.Router, *device.Granter) {
 	// the name provided below becomes the 'iss' claim in minted access tokens
 	// start time determines the 'nbf' claim
 	// the TTL integer determines the lifetime of an access token in seconds
-	name := "http://" + cfg.Server.Host + ":" + cfg.Server.Port
+	// we are using plain http here strictly for example purposes
+	name := cfg.OAuth.Issuer
 	hour, _ := time.ParseDuration(cfg.OAuth.TokenTTL)
 	issuer := oauth.NewSimpleIssuer(private, name+cfg.OAuth.JWKS, time.Now(), hour)
 
 	// create a device granter
+	name = cfg.Server.Host + ":" + cfg.Server.Port
 	minutes, _ := time.ParseDuration(cfg.DeviceGrant.UserCode.TTL)
 	granter := device.NewGranter(issuer, minutes, cfg.DeviceGrant.UserCode.Length, name+cfg.DeviceGrant.Registration)
 

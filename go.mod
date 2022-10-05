@@ -10,6 +10,7 @@ require (
 	github.com/goombaio/namegenerator v0.0.0-20181006234301-989e774b106e // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/ilyakaznacheev/cleanenv v1.3.0 // indirect
+	github.com/jarcoal/httpmock v1.2.0 // indirect
 	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.4.0 // indirect
