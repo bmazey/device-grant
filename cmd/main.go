@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/rand"
 	"crypto/rsa"
+	"device-grant/internal/config"
 	"device-grant/internal/grants/device"
 	"device-grant/pkg/oauth"
 	"log"
@@ -13,8 +14,20 @@ import (
 )
 
 func main() {
+	// parse local config (could be added as cmd line arg)
+	cfg := config.NewConfig("internal/config/local.yml")
+
+	// create a new mux router
+	router := NewRouter(cfg)
+
+	// start the server
+	log.Fatal(http.ListenAndServe(":"+cfg.Server.Port, router))
+}
+
+// NewRouter creates a new mux router with applied server, oauth, and device grant configurations
+func NewRouter(cfg config.Config) *mux.Router {
 	// generate an RSA key pair
-	private, err := rsa.GenerateKey(rand.Reader, 2048)
+	private, err := rsa.GenerateKey(rand.Reader, cfg.OAuth.RSABits)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,12 +36,13 @@ func main() {
 	// the name provided below becomes the 'iss' claim in minted access tokens
 	// start time determines the 'nbf' claim
 	// the TTL integer determines the lifetime of an access token in seconds
-	hour, _ := time.ParseDuration("60m")
-	issuer := oauth.NewSimpleIssuer(private, "http://127.0.0.1:8081/jwks", time.Now(), hour)
+	name := "http://" + cfg.Server.Host + ":" + cfg.Server.Port
+	hour, _ := time.ParseDuration(cfg.OAuth.TokenTTL)
+	issuer := oauth.NewSimpleIssuer(private, name+cfg.OAuth.JWKS, time.Now(), hour)
 
 	// create a device granter
-	minutes, _ := time.ParseDuration("10m")
-	granter := device.NewGranter(issuer, minutes, 8, "http://127.0.0.1:8081/device")
+	minutes, _ := time.ParseDuration(cfg.DeviceGrant.UserCode.TTL)
+	granter := device.NewGranter(issuer, minutes, cfg.DeviceGrant.UserCode.Length, name+cfg.DeviceGrant.Registration)
 
 	// add a default public client_id for testing, and log it to console
 	client := granter.ClientStore.Create()
@@ -38,13 +52,12 @@ func main() {
 	router := mux.NewRouter()
 
 	// host oauth2 JWKS endpoint
-	router.HandleFunc("/jwks", issuer.JWKSHandler)
+	router.HandleFunc(cfg.OAuth.JWKS, issuer.JWKSHandler)
 
 	// routes specific to RFC 8628 OAuth 2.0 Device Authorization Grant https://www.rfc-editor.org/rfc/rfc8628
 	router.HandleFunc("/device", granter.RegistrationHandler).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/access_token", granter.AccessTokenHandler).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/device_authorization", granter.AuthorizationHandler).Methods(http.MethodPost, http.MethodOptions)
 
-	// start the server
-	log.Fatal(http.ListenAndServe(":8081", router))
+	return router
 }
