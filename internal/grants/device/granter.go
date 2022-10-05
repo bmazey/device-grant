@@ -13,6 +13,7 @@ const (
 	TYPE  = "urn:ietf:params:oauth:grant-type:device_code"
 )
 
+// Granter takes an issuer, datastores, code ttl configuration, and JWT
 type Granter struct {
 	Issuer             oauth.SimpleIssuer
 	ClientStore        data.ClientStore
@@ -20,12 +21,11 @@ type Granter struct {
 	TrustedDeviceStore data.TrustedDeviceStore
 	CodeTTL            time.Duration
 	VerificationURI    string
-	Audience           string
 	Type               string
 	UserCodeLength     int
 }
 
-func NewGranter(issuer oauth.SimpleIssuer, ttl time.Duration, length int, uri string, audience string) Granter {
+func NewGranter(issuer oauth.SimpleIssuer, ttl time.Duration, length int, uri string) Granter {
 	return Granter{
 		Issuer:             issuer,
 		ClientStore:        data.NewClientStore(),
@@ -33,7 +33,6 @@ func NewGranter(issuer oauth.SimpleIssuer, ttl time.Duration, length int, uri st
 		TrustedDeviceStore: data.NewTrustedDeviceStore(),
 		CodeTTL:            ttl,
 		VerificationURI:    uri,
-		Audience:           audience,
 		UserCodeLength:     length,
 		Type:               TYPE,
 	}

@@ -37,7 +37,7 @@ func (g *Granter) AccessTokenHandler(w http.ResponseWriter, r *http.Request) {
 
 	// device is trusted, generate access JWT
 	// we're using a compound subject and sample resource server audience name
-	accessToken, err := g.Issuer.IssueJWT(client+"#"+device, []string{"important-resource-server"})
+	accessToken, err := g.Issuer.IssueAccessToken(client+"#"+device, g.Issuer.Audience)
 	if err != nil {
 		log.Fatal(err)
 	}

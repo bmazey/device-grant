@@ -11,6 +11,7 @@ import (
 	"testing"
 )
 
+// TestSuccessfulDeviceGrantFlow generates a random public client id, attempts to authorize a device, and produce a jwt
 func TestSuccessfulDeviceGrantFlow(t *testing.T) {
 	// parse test config
 	cfg := config.NewConfig("config/test.yml")
@@ -30,7 +31,6 @@ func TestSuccessfulDeviceGrantFlow(t *testing.T) {
 	assert.Equal(t, 200, w.Code)
 	log.Print(w.Body)
 
-	// marshal to json
 	response := device.AuthorizationResponse{}
 	err := json.NewDecoder(w.Body).Decode(&response)
 	assert.Nil(t, err)
@@ -52,4 +52,9 @@ func TestSuccessfulDeviceGrantFlow(t *testing.T) {
 
 	assert.Equal(t, 200, w.Code)
 	log.Print(w.Body)
+}
+
+// TestMismatchedDeviceCodes server responds with HTTP 403 FORBIDDEN when a client presents incorrect device code
+func TestMismatchedDeviceCodes(t *testing.T) {
+	// TODO - implement ...
 }

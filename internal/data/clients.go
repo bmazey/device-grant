@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// ClientStore acts as a simple in-memory client_id datastore
 type ClientStore struct {
 	IDs       []string
 	Generator namegenerator.Generator

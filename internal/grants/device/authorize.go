@@ -22,14 +22,14 @@ func (g *Granter) AuthorizationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// start by checking to see if the client_id exists (known public clients only)
+	// start by checking to see if the client_id exists
 	id := r.FormValue("client_id")
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	// check to see if the client is known (public only - no confidential clients in this example)
+	// check to see if the client is known (public clients only - no client confidential)
 	if !g.ClientStore.Contains(id) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return

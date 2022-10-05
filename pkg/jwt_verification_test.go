@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// JWT contains a sample access token minted by this issuer which expires in 2122
+// JWKS is a snapshot of the matching, hosted endpoint with kid value
 const (
 	JWT = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjI5NDVjNmU0LTZkN2UtNGFmYS1hZmI0LTlkMWUzYzlmZDE5NSIsInR5cCI6IkpXVCJ9.eyJhd" +
 		"WQiOlsiaW1wb3J0YW50LXJlc291cmNlLXNlcnZlciJdLCJleHAiOjQ4MTg1OTQ0MjAsImlhdCI6MTY2NDk5NDQyMCwiaXNzIjoiaHR0cH" +
@@ -33,6 +35,7 @@ const (
 			}`
 )
 
+// TestResourceServerJWTVerification checks if a resource server can verify a jwt minted by this issuer
 func TestResourceServerJWTVerification(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
@@ -47,4 +50,9 @@ func TestResourceServerJWTVerification(t *testing.T) {
 	assert.Nil(t, err)
 
 	log.Printf("issuer: %v, audience: %v, subject: %v", claims.Issuer, claims.Audience, claims.Subject)
+}
+
+// TestResourceServerExpiredJWT verification fails when given an expired access token
+func TestResourceServerExpiredJWT(t *testing.T) {
+	// TODO - implement ...
 }

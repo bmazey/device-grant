@@ -27,13 +27,12 @@ func NewRouter(cfg config.Config) (*mux.Router, *device.Granter) {
 	// we are using plain http here strictly for example purposes
 	name := cfg.OAuth.Issuer
 	hour, _ := time.ParseDuration(cfg.OAuth.TokenTTL)
-	issuer := oauth.NewSimpleIssuer(private, name+cfg.OAuth.JWKS, time.Now(), hour)
+	issuer := oauth.NewSimpleIssuer(private, name+cfg.OAuth.JWKS, cfg.OAuth.Audience, time.Now(), hour)
 
 	// create a device granter
 	name = cfg.Server.Host + ":" + cfg.Server.Port
 	minutes, _ := time.ParseDuration(cfg.DeviceGrant.UserCode.TTL)
-	granter := device.NewGranter(issuer, minutes, cfg.DeviceGrant.UserCode.Length, name+cfg.DeviceGrant.Registration,
-		cfg.OAuth.Audience)
+	granter := device.NewGranter(issuer, minutes, cfg.DeviceGrant.UserCode.Length, name+cfg.DeviceGrant.Registration)
 
 	// create gorilla mux router
 	router := mux.NewRouter()

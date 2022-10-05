@@ -11,14 +11,16 @@ import (
 
 type SimpleIssuer struct {
 	Name      string
+	Audience  string
 	Signer    jose.Signer
 	Keys      jose.JSONWebKeySet
 	NotBefore time.Time
 	TokenTTL  time.Duration
 }
 
-func NewSimpleIssuer(private *rsa.PrivateKey, name string, start time.Time, ttl time.Duration) SimpleIssuer {
-	// generate a uuid to serve as the kid
+// NewSimpleIssuer a jwt signer and matching jwks given a rsa key pair, iss name, aud name, start time, and jwt ttl
+func NewSimpleIssuer(private *rsa.PrivateKey, name string, audience string, start time.Time, ttl time.Duration) SimpleIssuer {
+	// generate uuid to serve as the kid
 	kid := uuid.New().String()
 
 	// create a JWT signer & matching JWKS from the generated pair
@@ -32,11 +34,13 @@ func NewSimpleIssuer(private *rsa.PrivateKey, name string, start time.Time, ttl 
 		Keys:      NewJSONWebKeySet(private.PublicKey, kid),
 		NotBefore: start,
 		Name:      name,
+		Audience:  audience,
 		TokenTTL:  ttl,
 	}
 }
 
-func (s *SimpleIssuer) IssueJWT(subject string, audience []string) (*AccessToken, error) {
+// IssueAccessToken creates a signed jwt given a subject and audience for 'sub' and 'aud' claims
+func (s *SimpleIssuer) IssueAccessToken(subject string, audience string) (*AccessToken, error) {
 	builder := jwt.Signed(s.Signer)
 
 	now := time.Now()
@@ -45,7 +49,7 @@ func (s *SimpleIssuer) IssueJWT(subject string, audience []string) (*AccessToken
 	claims := jwt.Claims{
 		Issuer:    s.Name,
 		Subject:   subject,
-		Audience:  audience,
+		Audience:  []string{audience},
 		IssuedAt:  jwt.NewNumericDate(now),
 		Expiry:    jwt.NewNumericDate(later),
 		NotBefore: jwt.NewNumericDate(s.NotBefore),

@@ -14,6 +14,7 @@ const (
 	SIG   = "sig"
 )
 
+// NewJSONWebKeySet provides a single-key set with a kid value
 func NewJSONWebKeySet(public rsa.PublicKey, kid string) jose.JSONWebKeySet {
 	key := jose.JSONWebKey{
 		Key:       &public,
@@ -27,6 +28,7 @@ func NewJSONWebKeySet(public rsa.PublicKey, kid string) jose.JSONWebKeySet {
 	}
 }
 
+// JWKSHandler a matching HTTP endpoint for hosting jwks
 func (s *SimpleIssuer) JWKSHandler(w http.ResponseWriter, r *http.Request) {
 	response, err := json.Marshal(s.Keys)
 	if err != nil {
