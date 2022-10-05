@@ -2,6 +2,6 @@ package oauth
 
 import "testing"
 
-func ResourceServerJWTVerificationTest(t *testing.T) {
+func TestResourceServerJWTVerification(t *testing.T) {
 	// TODO - implement
 }
