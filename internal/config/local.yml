@@ -5,9 +5,10 @@ server:
 
 # oauth configurations
 oauth:
-  issuer: "https://identity.io"
   rsa_bits: 2048
-  jwt_ttl: "876000h"
+  audience: "important-resource-server"
+  issuer: "https://identity.io"
+  jwt_ttl: "60m"
   jwks: "/jwks"
 
 # device grant configurations

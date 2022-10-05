@@ -2,11 +2,12 @@ package pkg
 
 import (
 	"device-grant/pkg/oauth"
-	"github.com/jarcoal/httpmock"
-	"github.com/stretchr/testify/assert"
 	"log"
 	"net/http"
 	"testing"
+
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/assert"
 )
 
 const (

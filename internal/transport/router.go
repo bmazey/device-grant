@@ -32,7 +32,8 @@ func NewRouter(cfg config.Config) (*mux.Router, *device.Granter) {
 	// create a device granter
 	name = cfg.Server.Host + ":" + cfg.Server.Port
 	minutes, _ := time.ParseDuration(cfg.DeviceGrant.UserCode.TTL)
-	granter := device.NewGranter(issuer, minutes, cfg.DeviceGrant.UserCode.Length, name+cfg.DeviceGrant.Registration)
+	granter := device.NewGranter(issuer, minutes, cfg.DeviceGrant.UserCode.Length, name+cfg.DeviceGrant.Registration,
+		cfg.OAuth.Audience)
 
 	// create gorilla mux router
 	router := mux.NewRouter()

@@ -14,6 +14,7 @@ type Config struct {
 	} `yaml:"server"`
 	OAuth struct {
 		RSABits  int    `yaml:"rsa_bits"`
+		Audience string `yaml:"audience"`
 		Issuer   string `yaml:"issuer"`
 		TokenTTL string `yaml:"jwt_ttl"`
 		JWKS     string `yaml:"jwks"`
