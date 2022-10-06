@@ -1,4 +1,4 @@
-# device grant [RFC 8628](https://www.rfc-editor.org/rfc/rfc8628)
+# [RFC 8628](https://www.rfc-editor.org/rfc/rfc8628) device grant
 
 A simple oauth2-enabled device grant server which implements RFC 8628.
 ```
